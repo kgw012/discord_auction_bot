@@ -84,9 +84,14 @@ def item_get_delete(request, player_pk, item_pk):
         return item_delete()
 
 
-# @api_view(['POST'])
-# def bid_create(request, player_pk, item_pk):
-#     player = get_object_or_404(Player, pk=player_pk)
-#     item = get_object_or_404(Item, pk=item_pk)
-    
-    
+@api_view(['POST'])
+def bid(request, player_pk, item_pk):
+    player = get_object_or_404(Player, pk=player_pk)
+    item = get_object_or_404(Item, pk=item_pk)
+
+    if item.bidders.filter(pk=player_pk).exists():
+        item.bidders.remove(player)
+        return Response(data='삭제 완료', status=status.HTTP_204_NO_CONTENT)
+    else:
+        item.bidders.add(player)
+        return Response(data='저장 완료', status=status.HTTP_201_CREATED)

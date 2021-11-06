@@ -12,5 +12,5 @@ urlpatterns = [
     path('players/<int:player_pk>/items/<int:item_pk>', views.item_get_delete),
     
     # bid C,D
-    # path('players/<int:player_pk>/bid/<int:item_pk>', views.bid_create),
+    path('players/<int:player_pk>/bid/<int:item_pk>', views.bid),
 ]

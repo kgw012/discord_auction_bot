@@ -11,7 +11,7 @@ class Player(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
-    reg_player = models.ForeignKey(Player, on_delete=CASCADE)
+    reg_player = models.ForeignKey(Player, on_delete=CASCADE, related_name='reg_items')
     bidders = models.ManyToManyField(Player, related_name='bid_items')
 
     def __str__(self):

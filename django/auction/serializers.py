@@ -8,6 +8,7 @@ class PlayerListSerializer(serializers.ModelSerializer):
 
 
 class ItemListSerializer(serializers.ModelSerializer):
+    bidders = PlayerListSerializer(read_only=True, many=True)
     class Meta:
         model = Item
         fields = '__all__'

@@ -11,7 +11,7 @@ from .serializers import PlayerListSerializer, PlayerSerializer, ItemListSeriali
 def player_list_create(request):
     def player_list():
         players = Player.objects.all()
-        serializer = PlayerListSerializer(players, many=True)
+        serializer = PlayerSerializer(players, many=True)
         return Response(serializer.data)
 
     def player_create():
@@ -95,3 +95,10 @@ def bid(request, player_pk, item_pk):
     else:
         item.bidders.add(player)
         return Response(data='저장 완료', status=status.HTTP_201_CREATED)
+
+
+@api_view(['DELETE'])
+def clear(request):
+    Player.objects.all().delete()
+    Item.objects.all().delete()
+    return Response(data='모든 데이터 삭제 완료', status=status.HTTP_204_NO_CONTENT)

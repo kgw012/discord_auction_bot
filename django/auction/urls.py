@@ -13,4 +13,7 @@ urlpatterns = [
     
     # bid C,D
     path('players/<int:player_pk>/bid/<int:item_pk>', views.bid),
+
+    # all clear
+    path('clear', views.clear),
 ]

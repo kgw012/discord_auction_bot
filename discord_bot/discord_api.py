@@ -12,7 +12,7 @@ load_dotenv()
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 AUCTION_CHANNEL_ID = int(os.getenv('AUCTION_CHANNEL_ID'))
 COMMAND_PREFIX = '.'
-BASE_URL = 'http://127.0.0.1:8001/api/v1/auction'
+BASE_URL = 'http://127.0.0.1:8000/api/v1/auction'
 
 
 # logging setting
@@ -23,101 +23,6 @@ BASE_URL = 'http://127.0.0.1:8001/api/v1/auction'
 # handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 # handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 # logger.addHandler(handler)
-
-
-# methods
-def get_player_id_by_name(player_name):
-    # player 리스트 가져오기
-    list_players_url = BASE_URL + '/players'
-    res = requests.get(list_players_url)
-
-    # player_id와 함께 리턴할 메세지
-    msg = ''
-
-    # 리스트 가져오는 과정에 오류 발생 시 리턴
-    if res.status_code != 200:
-        player_id = -1
-        msg = f'{res.status_code} / 플레이어 리스트를 불러오는 도중 오류가 발생했습니다.'
-        return (player_id, msg)
-
-    # 리스트에서 player_name과 같은 이름을 가진 player 찾기
-    players = res.json()
-
-    player_id = -1
-
-    for player in players:
-        if player['name'] == player_name:
-            player_id = player['id']
-            break
-    
-    # 해당 player_name을 가진 player가 존재하지 않을 시
-    if player_id < 0:
-        msg = f'플레이어 목록에 해당 아이디를 가진 플레이어가 없습니다: {player_name}.'
-        return (player_id, msg)
-    
-    msg = '성공!'
-    return (player_id, msg)
-
-    
-def get_or_create_player_id_by_name(player_name):
-    # player_name을 이용해 player_id 가져오기
-    player_id, msg = get_player_id_by_name(player_name)
-
-    # 해당 plyaer_name을 가진 player가 존재하지 않으면 새로 생성
-    if player_id < 0:
-        create_player_url = BASE_URL + '/players'
-        data = {
-            'name': player_name,
-        }
-        res = requests.post(create_player_url, data)
-
-        # player를 생성하는 과정에서 오류 발생 시 리턴
-        if res.status_code != 200:
-            player_id = -1
-            msg = f'{res.status_code} / 플레이어를 생성하는 도중 오류가 발생했습니다.'
-            return (player_id, msg)
-        
-        # 생성된 player의 id 가져오기
-        player_id = res.json()['id']
-    
-    # player_id와 성공 status_code 리턴
-    return (player_id, msg)
-
-
-def get_item_id_by_name(reg_player_id, item_name):
-    # item 리스트 가져오기
-    list_items_url = BASE_URL + '/items'
-    res = requests.get(list_items_url)
-
-    # item_id와 함께 리턴할 메세지
-    msg = ''
-
-    # 리스트 가져오는 과정에 오류 발생 시 리턴
-    if res.status_code != 200:
-        item_id = -2
-        msg = f'{res.status_code} / 아이템 리스트를 불러오는 도중 오류가 발생했습니다.'
-        return (item_id, msg)
-
-    # 리스트에서 item_name과 같은 name을 가진 item 찾기
-    items = res.json()
-
-    item_id = -1
-
-    for item in items:
-        if item['reg_player'] != reg_player_id:
-            continue
-
-        if item['name'] == item_name:
-            item_id = item['id']
-            break
-    
-    # 리스트에 해당 이름을 가진 item이 없을 시
-    if item_id < 0:
-        msg = f'목록에 해당 아이템이 없습니다: {item_name}'
-        return (item_id, msg)
-
-    msg = '성공!'
-    return (item_id, msg)
 
 
 # classes
@@ -140,44 +45,9 @@ class Auction:
     # 거래소 목록 조회
     @staticmethod
     def list_items():
-        # 플레이어 리스트 가져오기
-        list_players_url = BASE_URL + '/players'
-        res = requests.get(list_players_url)
-        if res.status_code != 200:
-            return res.status_code
-
-        players = res.json()
-        
-        # 출력문 작성
-        script = "```markdown\n"\
-            "# 목록 보기\n\n"
-
-        for player in players:
-            items = player['reg_items']
-
-            if not items:
-                continue
-            
-            script += f"-{player['name']}-\n"
-            for item in items:
-                script += f"{item['name']}"
-
-                bidders = item['bidders']
-
-                if not bidders:
-                    script += "\n"
-                    continue
-                
-                script += " : "
-                for bidder in bidders:
-                    script += f"{bidder['name']} "
-                
-                script += f"\n"
-
-            script += "\n"
-
-        script += "```"
-        return script
+        url = BASE_URL + '/items'
+        res = requests.get(url)
+        print(res.data)
 
 
     # 거래소 목록 초기화

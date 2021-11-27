@@ -1,71 +1,24 @@
-import discord
-from discord.ext import commands
-import random
+import requests
 
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
-There are a number of utility commands being showcased here.'''
+BASE_URL = 'http://127.0.0.1:8000/api/v1/auction'
 
-intents = discord.Intents.default()
-intents.members = True
 
-bot = commands.Bot(command_prefix='?', description=description, intents=intents)
+script = "```markdown\n"\
+    "# 명령어 목록\n\n"\
+    ".목록 : 현재 등록된 물품 보기\n\n"\
+    ".초기화 : 목록 초기화\n\n"\
+    ".등록 <물품이름> : 물품을 옥션에 등록한다.\n\n"\
+    ".등록취소 <물품이름> : 물품 등록을 취소한다.(등록자만 가능)\n\n"\
+    ".입찰 <등록자 아이디> <물품이름> : 해당 물품에 입찰한다.\n\n"\
+    ".입찰취소 <등록자 아이디> <물품이름> : 해당 입찰을 취소한다.\n\n"\
+    "```"
 
-@bot.event
-async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
+url = BASE_URL + '/players'
+res = requests.get(url)
+items = res.json()
 
-@bot.command()
-async def add(ctx, left: int, right: int):
-    """Adds two numbers together."""
-    await ctx.send(left + right)
+# script = "```md\n"
+# for item in items:
+#     item_script = f'{item.id} {}'
 
-@bot.command()
-async def roll(ctx, dice: str):
-    """Rolls a dice in NdN format."""
-    try:
-        rolls, limit = map(int, dice.split('d'))
-    except Exception:
-        await ctx.send('Format has to be in NdN!')
-        return
-
-    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-    await ctx.send(result)
-
-@bot.command(description='For when you wanna settle the score some other way')
-async def choose(ctx, *choices: str):
-    """Chooses between multiple choices."""
-    await ctx.send(random.choice(choices))
-
-@bot.command()
-async def repeat(ctx, times: int, content='repeating...'):
-    """Repeats a message multiple times."""
-    for i in range(times):
-        await ctx.send(content)
-
-@bot.command()
-async def joined(ctx, member: discord.Member):
-    """Says when a member joined."""
-    await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
-
-@bot.group()
-async def cool(ctx):
-    """Says if a user is cool.
-    In reality this just checks if a subcommand is being invoked.
-    """
-    if ctx.invoked_subcommand is None:
-        await ctx.send('No, {0.subcommand_passed} is not cool'.format(ctx))
-
-@cool.command(name='bot')
-async def _bot(ctx):
-    """Is the bot cool?"""
-    await ctx.send('Yes, the bot is cool.')
-
-import os
-from dotenv import load_dotenv
-load_dotenv()
-DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-bot.run(DISCORD_BOT_TOKEN)
+print(items)

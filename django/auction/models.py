@@ -1,18 +1,18 @@
 from django.db import models
-from django.db.models.deletion import CASCADE
 
 class Player(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=150)
+    temp_id = models.IntegerField()
+    name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    reg_player = models.ForeignKey(Player, on_delete=CASCADE, related_name='reg_items')
+    reg_player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='reg_items')
     bidders = models.ManyToManyField(Player, related_name='bid_items')
 
-    def __str__(self):
-        return f'{self.name}(등록자 \'{self.reg_player}\', self.created_at)'
+    def __str__(self) -> str:
+        return f'{self.name} ({self.reg_player.name})'

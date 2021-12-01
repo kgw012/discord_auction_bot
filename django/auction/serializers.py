@@ -1,3 +1,4 @@
+from django.db.models.fields import IntegerField
 from rest_framework import serializers
 
 from .models import Player, Item
@@ -14,7 +15,7 @@ class ItemListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = ['id', 'temp_id', 'name', 'bidders']
+        fields = ['id', 'seq_id', 'name', 'bidders']
 
 
 class AuctionListSerializer(serializers.ModelSerializer):

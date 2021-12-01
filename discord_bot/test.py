@@ -15,10 +15,21 @@ script = "```markdown\n"\
 
 url = BASE_URL + '/players'
 res = requests.get(url)
-items = res.json()
+players = res.json()
 
-# script = "```md\n"
-# for item in items:
-#     item_script = f'{item.id} {}'
+script = "```md\n"
+for player in players:
+    script += f"-{player['name']}-\n"
+    for item in player['reg_items']:
+        script += f"{item['seq_id']}) {item['name']}"
 
-print(items)
+        if item['bidders']:
+            script += f" : {item['bidders'][0]['name']}"
+            for idx in range(1, len(item['bidders'])):
+                script += f", {item['bidders'][idx]['name']}"
+            script += f" 입찰희망!"
+
+        script += f"\n"
+    script += "\n"
+script += "```"
+print(script)
